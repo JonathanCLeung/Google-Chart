@@ -1,0 +1,60 @@
+﻿<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', { packages: ["motionchart", "table"] });
+      google.charts.setOnLoadCallback(drawChart);
+      //https://developers.google.com/chart/interactive/docs/gallery/motionchart
+      function drawChart() {
+          var queryString = encodeURIComponent('SELECT A, B, C, D, E, F, G, H, I where A > date "2018-01-01" limit  50');
+          var URL = "https://docs.google.com/spreadsheets/d/17BtjhX7SAD9J4cCvmVoE_3NCZzg4f6CCYwU_Kb0Cl0s/edit?usp=sharing&headers=1&gid=1274984689&tq=" + queryString;
+          var query = new google.visualization.Query(URL);
+          query.send(handleQueryResponse);
+     
+      }
+
+      function handleQueryResponse(response) {
+          if (response.isError()) {
+              alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+              return;
+          }
+
+          var data = response.getDataTable();
+
+
+
+          var TransposeData = new google.visualization.DataTable();
+          TransposeData.addColumn('string', 'Name');
+          TransposeData.addColumn('date', 'Date');
+          TransposeData.addColumn('number', 'Moving');
+          TransposeData.addColumn('number', 'Total');
+         // TransposeData.addColumn('number', 'Earn');
+          
+          var TotalRows = data.getNumberOfRows();
+          var TotalColumns = data.getNumberOfColumns();
+     
+          for (var i = 0; i < TotalRows; i++)
+          {
+              //var earn = 0;
+             
+              for (var j = 1; j < TotalColumns; j++) {
+                  //if (i > 0)
+                  //    earn = data.getValue(i, j) - data.getValue(i-1, j);
+
+                  TransposeData.addRow([data.getColumnLabel(j), data.getValue(i, 0),i, data.getValue(i, j)]);
+              }
+          }
+          var datatableChart = new google.visualization.Table(document.getElementById('datatableChart_div'));
+          datatableChart.draw(TransposeData, { showRowNumber: true, width: '100%', height: '100%' });
+
+          var chart = new google.visualization.MotionChart(document.getElementById('chart_div'));
+
+          chart.draw(TransposeData, { width: 600, height: 300 });
+      }
+    </script>
+  </head>
+  <body>
+    <div id="chart_div" style="width: 600px; height: 400px;"></div>
+      <div id='datatableChart_div'></div>
+  </body>
+</html>

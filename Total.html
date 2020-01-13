@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <!-- pivot ?-->
+    <!--transpose https://groups.google.com/forum/#!searchin/google-visualization-api/transpose$20datatable/google-visualization-api/d_0XLvCEOFs/MIvWrV34AwAJ -->
+    <!------http://jsfiddle.net/asgallant/TD7Q6/-->
+         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+
+         google.charts.load("current", { packages: ["corechart", "table", "controls"] });
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Category');
+    data.addColumn('number', 'Expenses');
+    data.addColumn('date', 'Month');
+    data.addRows([
+    // January 2014
+    ['Food', 150, new Date(2014, 0)],
+    ['Clothing', 100, new Date(2014, 0)],
+    // February 2014
+    ['Food', 180, new Date(2014, 1)],
+    ['Clothing', 40, new Date(2014, 1)],
+    // March 2014
+    ['Food', 160, new Date(2014, 2)],
+    ['Clothing', 100, new Date(2014, 2)],
+    // April 2014
+    ['Food', 190, new Date(2014, 3)],
+    ['Clothing', 120, new Date(2014, 3)]
+    ]);
+
+    var chart = new google.visualization.ChartWrapper({
+    chartType: 'LineChart',
+    containerId: 'chart_div',
+    options: {
+    height: 400,
+    width: 600,
+    vAxis: {
+    format: '$#,###'
+    }
+    }
+    });
+
+    var control = new google.visualization.ControlWrapper({
+    controlType: 'ChartRangeFilter',
+    containerId: 'control_div',
+    dataTable: data,
+    options: {
+    filterColumnIndex: 2, // filter on dates
+    ui: {
+    chartOptions: {
+    height: 50,
+    width: 600,
+    hAxis: {
+    format: 'MMM yyyy'
+    },
+    lineWidth: 0
+    },
+    chartView: {
+    columns: [2, {type: 'number', calc: function () {return 0;}}]
+    }
+    }
+    }
+    });
+
+    function updateChart () {
+    var view = control.getControl().applyFilter();
+    var groupedData = google.visualization.data.group(view, [0], [{
+    type: 'number',
+    column: 1,
+    label: data.getColumnLabel(1),
+    aggregation: google.visualization.data.sum
+    }]);
+    var formatter = new google.visualization.NumberFormat({pattern: '$#,###'});
+    formatter.format(groupedData, 1);
+    chart.setDataTable(groupedData);
+    chart.draw();
+    }
+
+    google.visualization.events.addListener(control, 'ready', updateChart);
+    google.visualization.events.addListener(control, 'statechange', updateChart);
+
+    control.draw();
+        }
+
+       // google.load('visualization', '1', { packages: ['controls'], callback: drawChart });
+
+    </script>
+    <title></title>
+</head>
+<body>
+    <div id="chart_div"></div>
+    <div id="control_div"></div>
+</body>
+</html>

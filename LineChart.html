@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script language="javascript">
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var queryString = encodeURIComponent('SELECT A,B,C,D,E,F,G,H,I');
+           //"gid=1274984689&";
+            //var queryString = "range=B8:I53";
+            var URL = "https://docs.google.com/spreadsheets/d/1X_3kfFQiLMgTsQ1H2oJAg3WeG_cJdcUECJhFn-ApEik/edit?usp=sharing&headers=1?&tq=" + queryString;
+          
+            //var URL = "https://docs.google.com/spreadsheets/d/17BtjhX7SAD9J4cCvmVoE_3NCZzg4f6CCYwU_Kb0Cl0s/edit?usp=sharing?gid=1274984689&headers=1&tq=" + queryString;
+            var query = new google.visualization.Query(URL);
+            query.send(handleQueryResponse);
+        }
+
+        function handleQueryResponse(response) {
+            if (response.isError()) {
+                alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+                return;
+            }
+            var options = {
+                title: 'Jon',                                           
+                //legend: 'none',
+                height:600,
+                curveType: 'function',
+                interpolateNulls: true
+                //colors: ['black', 'blue', 'red', 'green', 'yellow', 'gray', 'orange', 'lime']
+            };
+
+            var data = response.getDataTable();
+
+            var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+        }
+
+
+    </script>
+    <title></title>
+	<meta charset="utf-8" />
+</head>
+<body>
+    <div id="chart_div"></div>
+</body>
+</html>
